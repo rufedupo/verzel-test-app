@@ -92,10 +92,6 @@ const Account = () => {
     setOpen(false);
   };
 
-  const handleEditAccount = () => {
-    navigate('/my-account/edit');
-  };
-
   const handleLogout = () => {
     navigate('/');
   }
@@ -227,12 +223,11 @@ const Account = () => {
         </List>
       </Drawer>
       <Box component="main" sx={{ 
-        marginLeft: '2em'
+        marginLeft: '2em',
+        marginRight: '2em',
+        width: '100%'
       }}>
-        {selectedIndex === 0 ? 
-        <Box>
-          <MyAccount/>
-        </Box> : <Outlet/>}
+        {selectedIndex === 0 ? <MyAccount/> : <Outlet/>}
       </Box>
     </Box>
   );
