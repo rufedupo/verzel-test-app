@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -19,6 +18,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import { Outlet } from "react-router-dom"
 import MyAccount from '../components/MyAccount';
+import { useEffect, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 const drawerWidth = 240;
 
@@ -72,8 +73,14 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const Account = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (!localStorage.getItem("access-token")){
+      navigate('/login');
+    }
+  })
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -93,6 +100,9 @@ const Account = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('user-id');
+    localStorage.removeItem('access-token');
+    localStorage.removeItem('expire-token');
     navigate('/');
   }
 
@@ -229,6 +239,7 @@ const Account = () => {
       }}>
         {selectedIndex === 0 ? <MyAccount/> : <Outlet/>}
       </Box>
+      <Toaster />
     </Box>
   );
 }

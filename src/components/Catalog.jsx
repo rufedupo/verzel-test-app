@@ -11,6 +11,7 @@ const carListData = {
   totalPages: 356,
   carList: [
     {
+      id: '12331',
       name: "Hyundai Hb20 COMFORT",
       brand: "Hyundai",
       model: "HB20",
@@ -21,6 +22,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '123331',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -31,6 +33,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '123314342',
       name: "Hyundai Hb20 COMFORT",
       brand: "Hyundai",
       model: "HB20",
@@ -41,6 +44,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '12331423432',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -51,6 +55,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '123432432432431',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -61,6 +66,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '12432432432331',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -71,6 +77,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '12331432423432443255',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -81,6 +88,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '1243243256346534331',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -91,6 +99,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '121321212312321331',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -101,6 +110,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 243241,
       name: "Hyundai Hb20 COMFORT",
       brand: "Hyundai",
       model: "HB20",
@@ -111,6 +121,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 421421456435,
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -121,6 +132,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 43243256324643632456,
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -131,6 +143,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 54325326462346,
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -141,6 +154,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 5325325235325532,
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -151,6 +165,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 'fe32fg3g3ghg34h',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -161,6 +176,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 'fe32fg3g3ged2f2hg34h',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -171,6 +187,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 'fsw112dse32fg3g3ghg34h',
       name: "Hyundai Hb20 COMFORT",
       brand: "Hyundai",
       model: "HB20",
@@ -181,6 +198,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: '1d1wd1fe32fg3g3ghg34h',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -191,6 +209,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 'fe32g3gfg3g3g23ghg34h',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -201,6 +220,7 @@ const carListData = {
       value: "49900"
     },
     {
+      id: 'fe32fg3ge2e2gg2g3ghg3g24h',
       name: "Hyundai Hb20 COMFORT",
       brand: "Chevrolet",
       model: "Celta",
@@ -231,7 +251,7 @@ const Catalog = () => (
       }
     }}>
       {carListData.carList.length !== 0 ? carListData.carList.map((car) => (
-        <CarCard name={car.name} brand={car.brand} model={car.model} age={car.age} color={car.color} km={car.km} photoUrl={car.photoUrl} value={car.value} />
+        <CarCard key={car.id} name={car.name} brand={car.brand} model={car.model} age={car.age} color={car.color} km={car.km} photoUrl={car.photoUrl} value={car.value} />
       )) : ""}
     </Box>
     {carListData.carList.length === 0 ? <Typography variant="h4" sx={{

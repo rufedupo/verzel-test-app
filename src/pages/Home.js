@@ -1,8 +1,16 @@
 import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
 import Catalog from "../components/Catalog";
+import { useEffect, useState } from "react";
 
 const Home = () =>{
+  const [logged, setLogged] = useState(false);
+  // eslint-disable-next-line
+  useEffect(() => {
+    if (localStorage.getItem('access-token'))
+      setLogged(true);
+  });
+
   return (
     <Box>
       <Box sx={{ flexGrow: 1 }}>
@@ -24,7 +32,12 @@ const Home = () =>{
                   src="./logo.png"
                 />
               </Typography>
-              <Button color="inherit" component={Link} to="/login" >Minha Conta</Button>
+              {
+                logged ? 
+                <Button color="inherit" component={Link} to="/my-account" >Minha Conta</Button>
+                : 
+                <Button color="inherit" component={Link} to="/login" >Minha Conta</Button>
+              }
             </Toolbar>
           </Container>
         </AppBar>
