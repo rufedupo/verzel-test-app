@@ -1,6 +1,6 @@
 import { Card, CardActionArea, CardContent, CardMedia, Typography } from "@mui/material";
 
-const CarCard = ({name,brand, model, age, color, km, photoUrl, value}) => (
+const CarCard = ({name, brand, model, age, color, km, photoUrl, value}) => (
   <Card sx={{
     marginTop: '1em',
     backgroundColor: '#f1f1f1'
