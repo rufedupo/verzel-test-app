@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const client = axios.create({
-  baseURL: "https://localhost:7071" 
+  baseURL: "https://localhost:7071/user/" 
 });
 
 export const UserGetInfo = async () => {
@@ -12,7 +12,7 @@ export const UserGetInfo = async () => {
     }
   }
 
-  var userInfo = await client.get('/get-info', config)
+  var userInfo = await client.get('get-info', config)
                   .then(res => res.data);
   
   return userInfo;
@@ -26,7 +26,7 @@ export const UserUpdatePassword = async (newPassword) => {
     }
   }
 
-  var userInfo = await client.put('/update-password/'+newPassword, '', config)
+  var userInfo = await client.put('update-password/'+newPassword, '', config)
                   .then(res => { 
                     toast.dismiss(tLoad);
                     return res.data

@@ -2,13 +2,13 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const client = axios.create({
-  baseURL: "https://localhost:7071" 
+  baseURL: "https://localhost:7071/auth/" 
 });
 
 export const AuthLogin = async (email, password) => {
   const tLoad = toast.loading("Loading...");
 
-  await client.post('/login', {
+  await client.post('login', {
     email,
     password,
   })
@@ -31,7 +31,7 @@ export const AuthLogin = async (email, password) => {
 export const AuthRegister = async (name, email, password) => {
   const tLoad = toast.loading("Loading...");
 
-  await client.post('/register', {
+  await client.post('register', {
     name,
     email,
     password,
