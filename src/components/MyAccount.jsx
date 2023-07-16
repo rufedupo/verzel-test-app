@@ -22,7 +22,8 @@ const MyAccount = () => {
     fetchData();
   }, [])
 
-  const handleSetPassword = async () => {
+  const handleSetPassword = async (e) => {
+    e.preventDefault();
     await UserUpdatePassword(newPassword).then(res => {
       if (res)
         toast.success("Senha atualizada com sucesso!");
@@ -81,7 +82,7 @@ const MyAccount = () => {
                   mb: 3
                 }}
               />
-              <Button onClick={handleSetPassword} fullWidth sx={{
+              <Button onClick={e => handleSetPassword(e)} fullWidth sx={{
                 backgroundColor: '#b92f35',
                 color: '#fff',
                 '&:hover': {

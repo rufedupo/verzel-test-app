@@ -7,7 +7,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { useEffect, useState } from "react";
-import { DeleteCar, GetAllCars } from "../services/car.services";
+import { CreateCar, DeleteCar, GetAllCars, GetCarById } from "../services/car.services";
 
 const styleModal = {
   position: 'absolute',
@@ -25,8 +25,46 @@ const CarListAdmin = () => {
     totalPages: 1
   });
   const [openModal, setOpenModal] = useState(false);
+  const [nameNewCar, setNameNewCar] = useState('');
+  const [brandNewCar, setBrandNewCar] = useState('');
+  const [modelNewCar, setModelNewCar] = useState('');
+  const [colorNewCar, setColorNewCar] = useState('');
+  const [ageNewCar, setAgeNewCar] = useState('');
+  const [kmNewCar, setKmNewCar] = useState('');
+  const [priceNewCar, setPriceNewCar] = useState('');
+  const [photoNewCar, setPhotoNewCar] = useState('');
+
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [idEditCar, setIdEditCar] = useState('');
+  const [nameEditCar, setNameEditCar] = useState('');
+  const [brandEditCar, setBrandEditCar] = useState('');
+  const [modelEditCar, setModelEditCar] = useState('');
+  const [colorEditCar, setColorEditCar] = useState('');
+  const [ageEditCar, setAgeEditCar] = useState('');
+  const [kmEditCar, setKmEditCar] = useState('');
+  const [priceEditCar, setPriceEditCar] = useState('');
+  const [photoEditCar, setPhotoEditCar] = useState('');
+
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+
+  const handleOpenEditModal = async (e, id) => { 
+    e.preventDefault();
+    await GetCarById(id).then((data) => {
+      setIdEditCar(id);
+      setNameEditCar(data.name);
+      setBrandEditCar(data.brand);
+      setModelEditCar(data.model);
+      setColorEditCar(data.color);
+      setAgeEditCar(data.age);
+      setKmEditCar(data.km);
+      setPriceEditCar(data.price);
+      setOpenEditModal(true);
+    })
+  };
+  const handleCloseEditModal = () => {
+    setOpenEditModal(false)
+  };
 
   const fetchData = async (page) => {
     await GetAllCars(page).then((data) =>
@@ -40,27 +78,60 @@ const CarListAdmin = () => {
     fetchData();
   }, [])
 
-  const handleBackButton = () => {
+  const handleBackButton = (e) => {
+    e.preventDefault();
     fetchData(currentPage-1);
     setCurrentPage(currentPage-1);
   }
 
-  const handleNextButton = () => {
+  const handleNextButton = (e) => {
+    e.preventDefault();
     fetchData(currentPage+1);
     setCurrentPage(currentPage+1);
   }
 
-  const handleBackwardButton = () => {
+  const handleBackwardButton = (e) => {
+    e.preventDefault();
     fetchData(0);
     setCurrentPage(0);
   }
 
-  const handleForwardButton = () => {
+  const handleForwardButton = (e) => {
+    e.preventDefault();
     fetchData(carListData.totalPages-1);
     setCurrentPage(carListData.totalPages-1);
   }
 
-  const handleDeleteCar = async (guid) => {
+  const handleCreateCar = async (e) => {
+    e.preventDefault();
+    await CreateCar({
+      name: nameNewCar,
+      brand: brandNewCar,
+      model: modelNewCar,
+      color: colorNewCar,
+      age: ageNewCar,
+      km: kmNewCar,
+      price: priceNewCar
+    }).then((data) => {
+      setCurrentPage(0);
+      fetchData();
+      setNameNewCar('');
+      setBrandNewCar('');
+      setModelNewCar('');
+      setColorNewCar('');
+      setAgeNewCar('');
+      setKmNewCar('');
+      setPriceNewCar('');
+      handleCloseModal();
+    })
+  }
+
+  const handleEditCar = async (e) => {
+    e.preventDefault();
+  }
+
+  const handleDeleteCar = async (e, guid) => {
+    e.preventDefault();
     await DeleteCar(guid).then((data) => {
       setCurrentPage(0);
       fetchData();
@@ -71,7 +142,10 @@ const CarListAdmin = () => {
     <>
       <Box>
         <h1>Lista de veículos</h1>
-        <Button onClick={handleOpenModal} sx={{
+        <Button onClick={e => {
+          e.preventDefault();
+          handleOpenModal();
+        }} sx={{
           backgroundColor: '#b92f35',
           color: '#fff',
           '&:hover': {
@@ -139,10 +213,10 @@ const CarListAdmin = () => {
                   <TableCell align="right">{row.km}</TableCell>
                   <TableCell align="right">{row.price}</TableCell>
                   <TableCell align="center">
-                    <IconButton>
+                    <IconButton onClick={e => handleOpenEditModal(e, row.id)}>
                       <EditIcon/>
                     </IconButton>
-                    <IconButton onClick={() => handleDeleteCar(row.id)}>
+                    <IconButton onClick={e => handleDeleteCar(e, row.id)}>
                       <DeleteIcon/>
                     </IconButton> 
                   </TableCell>
@@ -151,6 +225,10 @@ const CarListAdmin = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        {carListData.carList.length === 0 ? <Typography variant="h4" sx={{
+          margin: '2em',
+          textAlign: 'center'
+        }}>Nenhum carro cadastrado</Typography> : ""}
         <Box sx={{
           display: 'flex',
           placeItems: 'center',
@@ -161,7 +239,7 @@ const CarListAdmin = () => {
             marginRight: '1em',
             backgroundColor: '#fff',
             color: '#000'
-          }} onClick={handleBackwardButton}><KeyboardDoubleArrowLeftIcon/></IconButton> : ""}
+          }} onClick={e => handleBackwardButton(e)}><KeyboardDoubleArrowLeftIcon/></IconButton> : ""}
           {currentPage !== 0 ? <IconButton size="small" sx={{
             marginRight: '1em',
             backgroundColor: '#000',
@@ -169,7 +247,7 @@ const CarListAdmin = () => {
             '&:hover': {
               backgroundColor: '#b92f35',
             }
-          }} onClick={handleBackButton}><KeyboardArrowLeftIcon/></IconButton> : ""}
+          }} onClick={e => handleBackButton(e)}><KeyboardArrowLeftIcon/></IconButton> : ""}
           <Typography>{currentPage+1} de {carListData.totalPages}</Typography>
           {currentPage !== carListData.totalPages-1 ? <IconButton size="small" sx={{
             marginLeft: '1em',
@@ -178,13 +256,13 @@ const CarListAdmin = () => {
             '&:hover': {
               backgroundColor: '#b92f35',
             }
-          }} onClick={handleNextButton}><KeyboardArrowRightIcon/></IconButton> : ""}
+          }} onClick={e => handleNextButton(e)}><KeyboardArrowRightIcon/></IconButton> : ""}
           {currentPage !== carListData.totalPages-1 ? <IconButton size="small" sx={{
             marginLeft: '1em',
             backgroundColor: '#fff',
             maxWidth: '1em',
             color: '#000'
-          }} onClick={handleForwardButton}><KeyboardDoubleArrowRightIcon/></IconButton> : ""}
+          }} onClick={e => handleForwardButton(e)}><KeyboardDoubleArrowRightIcon/></IconButton> : ""}
         </Box>
       </Box>
       <Modal
@@ -209,12 +287,14 @@ const CarListAdmin = () => {
                 }}
                 src="https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-wa7IqZCJVOlsWgp1IaO4jUmlSJ6PPE_WUOyw418b-GedW0OxNs6ckxSB10EWhfPYHcDCfEmFZ6G_DbwuhZHB7UPAapEA=w1920-h820"/>
             <FormGroup sx={{
-              marginRight: '1em'
+              marginRight: '1em',
+              width: '200px'
             }}>
               <TextField 
                 label="Nome"
                 variant="outlined"
-                value="" 
+                value={nameNewCar}
+                onChange={e => setNameNewCar(e.target.value)}
                 fullWidth
                 sx={{
                   mb: 3
@@ -223,7 +303,8 @@ const CarListAdmin = () => {
               <TextField 
                 label="Marca"
                 variant="outlined"
-                value="" 
+                value={brandNewCar}
+                onChange={e => setBrandNewCar(e.target.value)}
                 fullWidth
                 sx={{
                   mb: 3
@@ -232,7 +313,8 @@ const CarListAdmin = () => {
               <TextField 
                 label="Modelo"
                 variant="outlined"
-                value="" 
+                value={modelNewCar}
+                onChange={e => setModelNewCar(e.target.value)}
                 fullWidth
                 sx={{
                   mb: 3
@@ -241,19 +323,23 @@ const CarListAdmin = () => {
               <TextField 
                 label="Cor"
                 variant="outlined"
-                value="" 
+                value={colorNewCar}
+                onChange={e => setColorNewCar(e.target.value)}
                 fullWidth
                 sx={{
                   mb: 3
                 }}
               />
             </FormGroup>
-            <FormGroup>
+            <FormGroup sx={{
+              width: '200px'
+            }}>
               <TextField 
                 label="Ano"
                 variant="outlined"
                 type="number"
-                value="" 
+                value={ageNewCar}
+                onChange={e => setAgeNewCar(e.target.value)}
                 fullWidth
                 sx={{
                   mb: 3
@@ -263,7 +349,8 @@ const CarListAdmin = () => {
                 label="Km"
                 variant="outlined"
                 type="number"
-                value="" 
+                value={kmNewCar}
+                onChange={e => setKmNewCar(e.target.value)}
                 fullWidth
                 sx={{
                   mb: 3
@@ -273,7 +360,8 @@ const CarListAdmin = () => {
                 label="Preço"
                 variant="outlined"
                 type="number"
-                value="" 
+                value={priceNewCar}
+                onChange={e => setPriceNewCar(e.target.value)}
                 fullWidth
                 sx={{
                   mb: 3
@@ -287,7 +375,122 @@ const CarListAdmin = () => {
                   backgroundColor: '#000',
                   color: '#fff'
                 }
-              }}>Adicionar</Button>
+              }} onClick={e => handleCreateCar(e)}>Adicionar</Button>
+            </FormGroup>
+          </FormControl>
+        </Box>
+      </Modal>
+      <Modal
+        open={openEditModal}
+        onClose={handleCloseEditModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModal}>
+          <h2>
+            Editar veículo
+          </h2>
+          <FormControl sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}>
+            <Box component="img"
+                sx={{
+                  height: 300,
+                  width: 300,
+                  marginRight: '2em'
+                }}
+                src="https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-wa7IqZCJVOlsWgp1IaO4jUmlSJ6PPE_WUOyw418b-GedW0OxNs6ckxSB10EWhfPYHcDCfEmFZ6G_DbwuhZHB7UPAapEA=w1920-h820"/>
+            <FormGroup sx={{
+              marginRight: '1em',
+              width: '200px'
+            }}>
+              <TextField 
+                label="Nome"
+                variant="outlined"
+                value={nameEditCar}
+                onChange={e => setNameEditCar(e.target.value)}
+                fullWidth
+                sx={{
+                  mb: 3
+                }}
+              />
+              <TextField 
+                label="Marca"
+                variant="outlined"
+                value={brandEditCar}
+                onChange={e => setBrandEditCar(e.target.value)}
+                fullWidth
+                sx={{
+                  mb: 3
+                }}
+              />
+              <TextField 
+                label="Modelo"
+                variant="outlined"
+                value={modelEditCar}
+                onChange={e => setModelEditCar(e.target.value)}
+                fullWidth
+                sx={{
+                  mb: 3
+                }}
+              />
+              <TextField 
+                label="Cor"
+                variant="outlined"
+                value={colorEditCar}
+                onChange={e => setColorEditCar(e.target.value)}
+                fullWidth
+                sx={{
+                  mb: 3
+                }}
+              />
+            </FormGroup>
+            <FormGroup sx={{
+              width: '200px'
+            }}>
+              <TextField 
+                label="Ano"
+                variant="outlined"
+                type="number"
+                value={ageEditCar}
+                onChange={e => setAgeEditCar(e.target.value)}
+                fullWidth
+                sx={{
+                  mb: 3
+                }}
+              />
+              <TextField 
+                label="Km"
+                variant="outlined"
+                type="number"
+                value={kmEditCar}
+                onChange={e => setKmEditCar(e.target.value)}
+                fullWidth
+                sx={{
+                  mb: 3
+                }}
+              />
+              <TextField 
+                label="Preço"
+                variant="outlined"
+                type="number"
+                value={priceEditCar}
+                onChange={e => setPriceEditCar(e.target.value)}
+                fullWidth
+                sx={{
+                  mb: 3
+                }}
+              />
+              <Button size="large" sx={{
+                backgroundColor: '#b92f35',
+                color: '#fff',
+                height: '55px',
+                '&:hover': {
+                  backgroundColor: '#000',
+                  color: '#fff'
+                }
+              }} onClick={e => handleEditCar(e)}>Salvar</Button>
             </FormGroup>
           </FormControl>
         </Box>

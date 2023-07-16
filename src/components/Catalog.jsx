@@ -29,27 +29,32 @@ const Catalog = () => {
     fetchData(0);
   }, [])
 
-  const handleBackButton = () => {
+  const handleBackButton = (e) => {
+    e.preventDefault();
     fetchData(currentPage-1);
     setCurrentPage(currentPage-1);
   }
 
-  const handleNextButton = () => {
+  const handleNextButton = (e) => {
+    e.preventDefault();
     fetchData(currentPage+1);
     setCurrentPage(currentPage+1);
   }
 
-  const handleBackwardButton = () => {
+  const handleBackwardButton = (e) => {
+    e.preventDefault();
     fetchData(0);
     setCurrentPage(0);
   }
 
-  const handleForwardButton = () => {
+  const handleForwardButton = (e) => {
+    e.preventDefault();
     fetchData(carListData.totalPages-1);
     setCurrentPage(carListData.totalPages-1);
   }
 
-  const handleSearchCar = () => {
+  const handleSearchCar = (e) => {
+    e.preventDefault();
     setCurrentPage(0);
     fetchData(0);
   }
@@ -65,15 +70,16 @@ const Catalog = () => {
         }}
         onKeyDown={(ev) => {
           if (ev.key === 'Enter') {
-            handleSearchCar();
-            ev.preventDefault();
+            handleSearchCar(ev);
           }
         }}
         InputProps={{
           endAdornment: (
             <InputAdornment 
               position="end">
-              <IconButton onClick={handleSearchCar}>
+              <IconButton onClick={(e) => {
+                handleSearchCar(e);
+              }}>
                 <SearchIcon />
               </IconButton>
             </InputAdornment>
@@ -118,7 +124,7 @@ const Catalog = () => {
           marginRight: '1em',
           backgroundColor: '#fff',
           color: '#000'
-        }} onClick={handleBackwardButton}><KeyboardDoubleArrowLeftIcon/></IconButton> : ""}
+        }} onClick={e => handleBackwardButton(e)}><KeyboardDoubleArrowLeftIcon/></IconButton> : ""}
         {currentPage !== 0 ? 
         <IconButton size="small" sx={{
           marginRight: '1em',
@@ -127,7 +133,7 @@ const Catalog = () => {
           '&:hover': {
             backgroundColor: '#b92f35',
           }
-        }} onClick={handleBackButton}><KeyboardArrowLeftIcon/></IconButton> : ""}
+        }} onClick={e => handleBackButton(e)}><KeyboardArrowLeftIcon/></IconButton> : ""}
         <Typography>{currentPage+1} de {carListData.totalPages}</Typography>
         {currentPage !== carListData.totalPages-1 ? 
         <IconButton size="small" sx={{
@@ -137,14 +143,14 @@ const Catalog = () => {
           '&:hover': {
             backgroundColor: '#b92f35',
           }
-        }} onClick={handleNextButton}><KeyboardArrowRightIcon/></IconButton> : ""}
+        }} onClick={e => handleNextButton(e)}><KeyboardArrowRightIcon/></IconButton> : ""}
         {currentPage !== carListData.totalPages-1 ? 
         <IconButton size="small" sx={{
           marginLeft: '1em',
           backgroundColor: '#fff',
           maxWidth: '1em',
           color: '#000'
-        }} onClick={handleForwardButton}><KeyboardDoubleArrowRightIcon/></IconButton> : ""}
+        }} onClick={e => handleForwardButton(e)}><KeyboardDoubleArrowRightIcon/></IconButton> : ""}
       </Box>
     </Box>
   )

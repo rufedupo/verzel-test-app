@@ -19,14 +19,16 @@ const Login = () => {
       navigate('/my-account');
   }, [])
 
-  const handleLoginSubmit = async () => {
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
     await AuthLogin(email, password).then(() => {
       if (localStorage.getItem('access-token'))
         navigate('/my-account');
     })
   }
 
-  const handleRegisterSubmit = async () => {
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
     await AuthRegister(newName, newEmail, newPassword).finally(() => {
       navigate('/my-account');
     });
@@ -89,7 +91,7 @@ const Login = () => {
                 backgroundColor: '#000',
               }
             }}
-            onClick={handleLoginSubmit}
+            onClick={e => handleLoginSubmit(e)}
             >CONTINUAR</Button>
           </Box>
           <Box  sx={{  
@@ -117,7 +119,7 @@ const Login = () => {
                 backgroundColor: '#b92f35',
               }
             }}
-            onClick={handleRegisterSubmit}>CADASTRE-SE</Button>
+            onClick={e => handleRegisterSubmit(e)}>CADASTRE-SE</Button>
           </Box>
         </Box>
         <Box>

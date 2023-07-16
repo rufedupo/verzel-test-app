@@ -83,6 +83,7 @@ const Account = () => {
   }, [])
 
   const handleListItemClick = (event, index) => {
+    event.preventDefault();
     setSelectedIndex(index);
     if (index === 0) {
       navigate('/my-account');
@@ -95,11 +96,13 @@ const Account = () => {
     setOpen(true);
   };
 
-  const handleDrawerClose = () => {
+  const handleDrawerClose = (e) => {
+    e.preventDefault();
     setOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
+    e.preventDefault();
     localStorage.removeItem('user-id');
     localStorage.removeItem('access-token');
     localStorage.removeItem('expire-token');
@@ -110,7 +113,7 @@ const Account = () => {
     <Box sx={{ display: 'flex' }}>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-            <Box onClick={handleDrawerClose}>
+            <Box onClick={e => handleDrawerClose(e)}>
               <Box
                 component="img"
                 sx={{
@@ -120,13 +123,13 @@ const Account = () => {
                 src="https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-xnOn_SR_6r5K8bdlf79M-UDb8CXNNcnFzso-jWrBU9L9I8goNc5dw4qzPrD2sihaMuDGYhjrKkldZWDxqF2tiwua1omQ=w1920-h892"
               />
             </Box>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={e => handleDrawerClose(e)}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
           <IconButton
             color="#757575"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
+            onClick={e => handleDrawerOpen(e)}
             sx={{
               paddingLeft: 5,
               paddingRight: 1.5,
@@ -216,7 +219,7 @@ const Account = () => {
                 justifyContent: open ? 'initial' : 'center',
                 px: 2.5,
               }}
-              onClick={handleLogout}
+              onClick={e => handleLogout(e)}
             >
               <ListItemIcon
                 sx={{
