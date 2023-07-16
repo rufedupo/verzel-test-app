@@ -56,6 +56,23 @@ export const CreateCar = async (car) => {
                            .finally(toast.dismiss(tLoad));
 }
 
+export const UpdateCar = async (car) => {
+  const tLoad = toast.loading("Loading...");
+  let config = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('access-token')
+    }
+  }
+  return await client.put('edit',
+                           car,
+                           config)
+                           .then((res) => {
+                             toast.success("Veículo editado com sucesso!");
+                             return res.data;
+                           })
+                           .finally(toast.dismiss(tLoad));
+}
+
 export const DeleteCar = async (carId) => {
   const tLoad = toast.loading("Loading...");
   let config = {

@@ -7,7 +7,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { useEffect, useState } from "react";
-import { CreateCar, DeleteCar, GetAllCars, GetCarById } from "../services/car.services";
+import { CreateCar, DeleteCar, GetAllCars, GetCarById, UpdateCar } from "../services/car.services";
 
 const styleModal = {
   position: 'absolute',
@@ -128,6 +128,28 @@ const CarListAdmin = () => {
 
   const handleEditCar = async (e) => {
     e.preventDefault();
+    await UpdateCar({
+      id: idEditCar,
+      name: nameEditCar,
+      brand: brandEditCar,
+      model: modelEditCar,
+      color: colorEditCar,
+      age: ageEditCar,
+      km: kmEditCar,
+      price: priceEditCar
+    }).then((data) => {
+      setCurrentPage(0);
+      fetchData();
+      setIdEditCar('');
+      setNameEditCar('');
+      setBrandEditCar('');
+      setModelEditCar('');
+      setColorEditCar('');
+      setAgeEditCar('');
+      setKmEditCar('');
+      setPriceEditCar('');
+      handleCloseEditModal();
+    })
   }
 
   const handleDeleteCar = async (e, guid) => {
