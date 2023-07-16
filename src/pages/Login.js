@@ -17,7 +17,7 @@ const Login = () => {
   useEffect(() => {
     if (localStorage.getItem("access-token"))
       navigate('/my-account');
-  })
+  }, [])
 
   const handleLoginSubmit = async () => {
     await AuthLogin(email, password).then(() => {

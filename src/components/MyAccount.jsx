@@ -20,7 +20,7 @@ const MyAccount = () => {
 
   useEffect(() => {
     fetchData();
-  })
+  }, [])
 
   const handleSetPassword = async () => {
     await UserUpdatePassword(newPassword).then(res => {

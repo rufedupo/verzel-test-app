@@ -1,55 +1,90 @@
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, TextField, InputAdornment } from "@mui/material";
 import CarCard from "./CarCard";
-import SearchCar from "./SearchCar";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { useEffect, useState } from "react";
-import { CarGetAll } from "../services/car.services";
+import { CarSearch } from "../services/car.services";
+import SearchIcon from '@mui/icons-material/Search';
 
 const Catalog = () => {
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchText, setSearchText] = useState('');
   const [carListData, setCarListData] = useState({
     carList: [],
     totalPages: 1
   });
 
-  const fetchData = async () => {
-    await CarGetAll(currentPage).then((data) =>
+  const fetchData = async (page) => {
+    await CarSearch(page, searchText).then((data) => {
       setCarListData({
         carList: data.carList,
         totalPages: data.totalPages
-      }))
+      })
+    })
   }
   
   useEffect(() => {
-    fetchData();
-  })
+    fetchData(0);
+  }, [])
 
-  const handleBackButton = async () => {
+  const handleBackButton = () => {
+    fetchData(currentPage-1);
     setCurrentPage(currentPage-1);
-    fetchData();
   }
 
-  const handleNextButton = async () => {
+  const handleNextButton = () => {
+    fetchData(currentPage+1);
     setCurrentPage(currentPage+1);
-    fetchData();
   }
 
-  const handleBackwardButton = async () => {
+  const handleBackwardButton = () => {
+    fetchData(0);
     setCurrentPage(0);
-    fetchData();
   }
 
-  const handleForwardButton = async () => {
+  const handleForwardButton = () => {
+    fetchData(carListData.totalPages-1);
     setCurrentPage(carListData.totalPages-1);
-    fetchData();
+  }
+
+  const handleSearchCar = () => {
+    setCurrentPage(0);
+    fetchData(0);
   }
   
   return (
     <Box>
-      <SearchCar />
+      <TextField 
+        variant="outlined"
+        value={searchText}
+        onChange={(e) => {
+          setCurrentPage(0);
+          setSearchText(e.target.value);
+        }}
+        onKeyDown={(ev) => {
+          if (ev.key === 'Enter') {
+            handleSearchCar();
+            ev.preventDefault();
+          }
+        }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment 
+              position="end">
+              <IconButton onClick={handleSearchCar}>
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
+        placeholder="Pesquise o veículo" 
+        sx={{
+          marginTop: '1em',
+          width: '100%'
+        }}
+      />
       <Box sx={{
         display: 'grid',
         gap: 1,

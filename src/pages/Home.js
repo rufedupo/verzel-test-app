@@ -2,6 +2,7 @@ import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/materi
 import { Link } from 'react-router-dom';
 import Catalog from "../components/Catalog";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 
 const Home = () =>{
   const [logged, setLogged] = useState(false);
@@ -9,7 +10,7 @@ const Home = () =>{
   useEffect(() => {
     if (localStorage.getItem('access-token'))
       setLogged(true);
-  });
+  }, []);
 
   return (
     <Box>
@@ -45,6 +46,7 @@ const Home = () =>{
           <Catalog />
         </Container>
       </Box>
+      <Toaster />
     </Box>
   );
 }

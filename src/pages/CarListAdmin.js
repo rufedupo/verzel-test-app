@@ -6,7 +6,8 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { DeleteCar, GetAllCars } from "../services/car.services";
 
 const styleModal = {
   position: 'absolute',
@@ -17,30 +18,54 @@ const styleModal = {
   p: 4,
 };
 
-function createData(name, brand, model, color, photoUrl, age, km, value) {
-  return { name, brand, model, color, photoUrl, age, km, value };
-}
-
-const rows = [
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-  createData('Hyundai Hb20 COMFORT', 'Hyundai', 'HB20',  'Prata', 'https://www.autodashboard.com.br/wp-content/uploads/2013/02/1-G.jpg', 2015, 180000,45000),
-];
-
-const currentPage = 2;
-const totalPages = 234;
-
 const CarListAdmin = () => {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [carListData, setCarListData] = useState({
+    carList: [],
+    totalPages: 1
+  });
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+
+  const fetchData = async (page) => {
+    await GetAllCars(page).then((data) =>
+      setCarListData({
+        carList: data.carList,
+        totalPages: data.totalPages
+      }))
+  }
+  
+  useEffect(() => {
+    fetchData();
+  }, [])
+
+  const handleBackButton = () => {
+    fetchData(currentPage-1);
+    setCurrentPage(currentPage-1);
+  }
+
+  const handleNextButton = () => {
+    fetchData(currentPage+1);
+    setCurrentPage(currentPage+1);
+  }
+
+  const handleBackwardButton = () => {
+    fetchData(0);
+    setCurrentPage(0);
+  }
+
+  const handleForwardButton = () => {
+    fetchData(carListData.totalPages-1);
+    setCurrentPage(carListData.totalPages-1);
+  }
+
+  const handleDeleteCar = async (guid) => {
+    await DeleteCar(guid).then((data) => {
+      setCurrentPage(0);
+      fetchData();
+    })
+  }
 
   return (
     <>
@@ -94,12 +119,11 @@ const CarListAdmin = () => {
             <TableBody sx={{
               backgroundColor: '#fbf4f5'
             }}>
-              {rows.map((row) => (
+              {carListData.carList.map((row) => (
                 <TableRow
-                  key={row.name}
+                  key={row.id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-                  
                   <TableCell align="center">
                     <IconButton>
                       <PhotoIcon/>
@@ -113,12 +137,12 @@ const CarListAdmin = () => {
                   <TableCell>{row.color}</TableCell>
                   <TableCell align="right">{row.age}</TableCell>
                   <TableCell align="right">{row.km}</TableCell>
-                  <TableCell align="right">{row.value}</TableCell>
+                  <TableCell align="right">{row.price}</TableCell>
                   <TableCell align="center">
                     <IconButton>
                       <EditIcon/>
                     </IconButton>
-                    <IconButton>
+                    <IconButton onClick={() => handleDeleteCar(row.id)}>
                       <DeleteIcon/>
                     </IconButton> 
                   </TableCell>
@@ -133,34 +157,34 @@ const CarListAdmin = () => {
           justifyContent: 'center',
           margin: '1em'
         }}>
-          {currentPage !== 1 ? <IconButton size="small" sx={{
+          {currentPage !== 0 ? <IconButton size="small" sx={{
             marginRight: '1em',
             backgroundColor: '#fff',
             color: '#000'
-          }}><KeyboardDoubleArrowLeftIcon/></IconButton> : ""}
-          {currentPage !== 1 ? <IconButton size="small" sx={{
+          }} onClick={handleBackwardButton}><KeyboardDoubleArrowLeftIcon/></IconButton> : ""}
+          {currentPage !== 0 ? <IconButton size="small" sx={{
             marginRight: '1em',
             backgroundColor: '#000',
             color: '#fff',
             '&:hover': {
               backgroundColor: '#b92f35',
             }
-          }}><KeyboardArrowLeftIcon/></IconButton> : ""}
-          <Typography>{currentPage} de {totalPages}</Typography>
-          {currentPage !== totalPages ? <IconButton size="small" sx={{
+          }} onClick={handleBackButton}><KeyboardArrowLeftIcon/></IconButton> : ""}
+          <Typography>{currentPage+1} de {carListData.totalPages}</Typography>
+          {currentPage !== carListData.totalPages-1 ? <IconButton size="small" sx={{
             marginLeft: '1em',
             backgroundColor: '#000',
             color: '#fff',
             '&:hover': {
               backgroundColor: '#b92f35',
             }
-          }}><KeyboardArrowRightIcon/></IconButton> : ""}
-          {currentPage !== totalPages ? <IconButton size="small" sx={{
+          }} onClick={handleNextButton}><KeyboardArrowRightIcon/></IconButton> : ""}
+          {currentPage !== carListData.totalPages-1 ? <IconButton size="small" sx={{
             marginLeft: '1em',
             backgroundColor: '#fff',
             maxWidth: '1em',
             color: '#000'
-          }}><KeyboardDoubleArrowRightIcon/></IconButton> : ""}
+          }} onClick={handleForwardButton}><KeyboardDoubleArrowRightIcon/></IconButton> : ""}
         </Box>
       </Box>
       <Modal

@@ -75,12 +75,12 @@ const Account = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-
+// eslint-disable-next-line 
   useEffect(() => {
     if (!localStorage.getItem("access-token")){
       navigate('/login');
     }
-  })
+  }, [])
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
