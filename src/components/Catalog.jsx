@@ -7,7 +7,9 @@ import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrow
 import { useEffect, useState } from "react";
 import { CarSearch } from "../services/car.services";
 import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import { toast } from "react-hot-toast";
+import { Close } from "@mui/icons-material";
 
 const Catalog = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -18,13 +20,16 @@ const Catalog = () => {
   });
 
   const fetchData = async (page) => {
-    const tLoad = toast.loading("Loading...");
-    await CarSearch(page, searchText).then((data) => {
-      setCarListData({
-        carList: data.carList,
-        totalPages: data.totalPages
-      });
-      toast.dismiss(tLoad);
+    await CarSearch(page, searchText).then((res) => {
+      if (res.status === 200){
+        toast.dismiss();
+        setCarListData({
+          carList: res.data.carList,
+          totalPages: res.data.totalPages
+        });
+      } else {
+        toast.error(res.data);
+      }
     });
   }
   
@@ -58,6 +63,7 @@ const Catalog = () => {
 
   const handleSearchCar = (e) => {
     e.preventDefault();
+    toast.loading('Loading...');
     setCurrentPage(0);
     fetchData(0);
   }
@@ -113,9 +119,9 @@ const Catalog = () => {
         )) : ""}
       </Box>
       {carListData.carList.length === 0 ? <Typography variant="h4" sx={{
-        margin: '2em',
-        textAlign: 'center'
-      }}>Nenhum carro foi encontrado</Typography> : ""}
+          margin: '2em',
+          textAlign: 'center'
+        }}>Nenhum carro foi encontrado</Typography> : ''}
       <Box sx={{
         display: 'flex',
         placeItems: 'center',

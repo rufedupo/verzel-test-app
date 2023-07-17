@@ -14,6 +14,7 @@ export const MaskCurrency = (e) => {
   }
   // lembrando que o valor é a quantidade de centavos, então precisa dividir por 100
   input.value = formatter.format(parseInt(input.value) / 100);
+  return input.value;
 }
 
 export const MaskNumber = (e) => {
@@ -21,4 +22,5 @@ export const MaskNumber = (e) => {
   input.value = input.value.replace(/\D+/g, '');
   if (input.value.length === 0)
       return;
+  return input.value;
 }

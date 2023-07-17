@@ -1,5 +1,4 @@
 import axios from "axios";
-import { toast } from "react-hot-toast";
 
 const client = axios.create({
   baseURL: "https://localhost:7071/car/" 
@@ -10,7 +9,18 @@ export const CarSearch = (page, searchText) => {
                           searchText,
                           page
                         })
-                        .then(res => res.data);
+                        .then(res => {
+                          return {
+                            status: 200,
+                            data: res.data
+                          }
+                        })
+                        .catch(error => {
+                          return {
+                            status: error.response.status,
+                            data: error.response.data
+                          }
+                        });
 }
 
 export const GetCarById = async (id) => {
@@ -20,23 +30,43 @@ export const GetCarById = async (id) => {
     }
   }
   return await client.get('get-by-id?id='+id, config)
-                        .then(res => res.data);
+                          .then(res => {
+                            return {
+                              status: 200,
+                              data: res.data
+                            }
+                          })
+                          .catch(error => {
+                            return {
+                              status: error.response.status,
+                              data: error.response.data
+                            }
+                          });
 }
 
 export const GetAllCars = async (page) => {
-  const tLoad = toast.loading("Loading...");
   let config = {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('access-token')
     }
   }
+
   return await client.get('get-all?page='+page, config)
-                        .then(res => res.data)
-                        .finally(toast.dismiss(tLoad));
+                        .then(res => {
+                          return {
+                            status: 200,
+                            data: res.data
+                          }
+                        })
+                        .catch(error => {
+                          return {
+                            status: error.response.status,
+                            data: error.response.data
+                          }
+                        });
 }
 
 export const CreateCar = async (car) => {
-  const tLoad = toast.loading("Loading...");
   let config = {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('access-token')
@@ -46,15 +76,21 @@ export const CreateCar = async (car) => {
   return await client.post('create',
                         car,
                         config)
-                        .then((res) => {
-                          toast.dismiss(tLoad);
-                          toast.success("Veículo criado com sucesso!");
-                          return res.data;
+                        .then(res => {
+                          return {
+                            status: 200,
+                            data: res.data
+                          };
+                        })
+                        .catch(error => {
+                          return {
+                            status: error.response.status,
+                            data: error.response.data
+                          };
                         });
 }
 
 export const UpdateCar = async (car) => {
-  const tLoad = toast.loading("Loading...");
   let config = {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('access-token')
@@ -63,24 +99,37 @@ export const UpdateCar = async (car) => {
   return await client.put('edit',
                            car,
                            config)
-                           .then((res) => {
-                              toast.dismiss(tLoad);
-                             toast.success("Veículo editado com sucesso!");
-                             return res.data;
+                           .then(res => {
+                              return {
+                                status: res.status,
+                                data: res.data
+                              };
+                           })
+                           .catch(error => {
+                              return {
+                                status: error.response.status,
+                                data: error.response.data
+                              };
                            });
 }
 
 export const DeleteCar = async (carId) => {
-  const tLoad = toast.loading("Loading...");
   let config = {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('access-token')
     }
   }
   return await client.delete('delete?id='+carId, config)
-                        .then((res) => {
-                          toast.dismiss(tLoad);
-                          toast.success("Veículo deletado com sucesso!");
-                          return res.data;
+                        .then(res => {
+                          return {
+                            status: 200,
+                            data: res.data
+                          };
+                        })
+                        .catch(error => {
+                          return  {
+                            status: error.response.status,
+                            data: error.response.data
+                          };
                         });
 }

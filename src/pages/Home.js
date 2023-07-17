@@ -1,15 +1,17 @@
 import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import Catalog from "../components/catalog";
 
 const Home = () =>{
   const [logged, setLogged] = useState(false);
-  // eslint-disable-next-line
+
   useEffect(() => {
-    if (localStorage.getItem('access-token'))
+    toast.loading('Loading...');
+    if (localStorage.getItem('access-token')){
       setLogged(true);
+    }
   }, []);
 
   return (

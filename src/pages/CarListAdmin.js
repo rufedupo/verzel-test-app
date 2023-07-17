@@ -7,10 +7,10 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { useEffect, useState } from "react";
-import { CreateCar, DeleteCar, GetAllCars, GetCarById, UpdateCar } from "../services/car.services";
+import { CreateCar, DeleteCar, GetAllCars, UpdateCar } from "../services/car.services";
 import { DropzoneDialog } from "mui-file-dropzone";
 import { toast } from "react-hot-toast";
-import { MaskCurrency, MaskNumber, formatReal } from "../utils/Format";
+import { MaskCurrency, MaskNumber } from "../utils/Format";
 
 const styleModal = {
   position: 'absolute',
@@ -18,7 +18,11 @@ const styleModal = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   bgcolor: 'background.paper',
-  p: 4,
+  p: 3,
+  '@media (max-width: 600px)': {
+    width: '300px',
+    height: '780px'
+  }
 };
 
 const CarListAdmin = () => {
@@ -58,13 +62,17 @@ const CarListAdmin = () => {
   }, [])
 
   const fetchData = async (page) => {
-    const tLoad = toast.loading("Loading...");
-    await GetAllCars(page).then((data) => {
-      setCarListData({
-        carList: data.carList,
-        totalPages: data.totalPages
-      })
+    let tLoad = toast.loading("Loading...");
+    await GetAllCars(page).then((res) => {
       toast.dismiss(tLoad)
+      if (res.status === 200) {
+        setCarListData({
+          carList: res.data.carList,
+          totalPages: res.data.totalPages
+        })
+      } else {
+        toast.error(res.data);
+      }
     });
   }
 
@@ -152,46 +160,67 @@ const CarListAdmin = () => {
 
   const handleCreateCar = async (e) => {
     e.preventDefault();
+    let tLoad = toast.loading('Loading...');
     await CreateCar({
       name: nameNewCar,
       brand: brandNewCar,
       model: modelNewCar,
       color: colorNewCar,
-      age: ageNewCar,
-      km: kmNewCar,
-      price: priceNewCar,
+      age: ageNewCar !== undefined ? parseInt(ageNewCar) : 0,
+      km: kmNewCar !== undefined ? parseInt(kmNewCar) : 0,
+      price: priceNewCar !== undefined ? priceNewCar.replace('.', '').replace(',', '.') : 0,
       photo: photoNewCar
-    }).then((data) => {
-      setCurrentPage(0);
-      fetchData();
-      handleCloseModal();
+    }).then((res) => {
+      toast.dismiss(tLoad);
+      if (res.status === 200) {
+        setCurrentPage(0);
+        fetchData();
+        handleCloseModal();
+        toast.success('Veículo adicionado com sucesso');
+      } else {
+        toast.error(res.data);
+      }
     })
   }
 
   const handleEditCar = async (e) => {
     e.preventDefault();
+    let tLoad = toast.loading('Loading...');
     await UpdateCar({
       id: idEditCar,
       name: nameEditCar,
       brand: brandEditCar,
       model: modelEditCar,
       color: colorEditCar,
-      age: ageEditCar,
-      km: kmEditCar,
-      price: priceEditCar,
+      age: ageEditCar !== undefined ? parseInt(ageEditCar) : 0,
+      km: kmEditCar !== undefined ? parseInt(kmEditCar) : 0,
+      price: priceEditCar !== undefined ? priceEditCar.replace('.', '').replace(',', '.') : 0,
       photo: photoEditCar
-    }).then((data) => {
-      setCurrentPage(0);
-      fetchData();
-      handleCloseEditModal();
+    }).then((res) => {
+      toast.dismiss(tLoad);
+      if (res.status === 200) {
+        setCurrentPage(0);
+        fetchData();
+        handleCloseEditModal();
+        toast.success('Veículo atualizado com sucesso');
+      } else {
+        toast.error(res.data);
+      }
     })
   }
 
   const handleDeleteCar = async (e, guid) => {
     e.preventDefault();
-    await DeleteCar(guid).then((data) => {
-      setCurrentPage(0);
-      fetchData();
+    let tLoad = toast.loading('Loading...');
+    await DeleteCar(guid).then((res) => {
+      toast.dismiss(tLoad);
+      if (res.status === 200) {
+        setCurrentPage(0);
+        fetchData();
+        toast.success('Veículo excluído com sucesso');
+      } else {
+        toast.error(res.data);
+      }
     })
   }
 
@@ -351,7 +380,12 @@ const CarListAdmin = () => {
           </h2>
           <FormControl sx={{
             display: 'flex',
-            flexDirection: 'row'
+            flexDirection: 'row',
+            '@media (max-width: 600px)': {
+              flexDirection: 'column',
+              maxWidth: '100px',
+              display: 'flex'
+            }
           }}>
             <Box component="img"
                 sx={{
@@ -390,7 +424,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={nameNewCar}
-                onChange={e => setNameNewCar(e.target.value)}
+                onChange={e => setNameNewCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -403,7 +437,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={brandNewCar}
-                onChange={e => setBrandNewCar(e.target.value)}
+                onChange={e => setBrandNewCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -416,7 +450,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={modelNewCar}
-                onChange={e => setModelNewCar(e.target.value)}
+                onChange={e => setModelNewCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -429,7 +463,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={colorNewCar}
-                onChange={e => setColorNewCar(e.target.value)}
+                onChange={e => setColorNewCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -512,7 +546,12 @@ const CarListAdmin = () => {
           </h2>
           <FormControl sx={{
             display: 'flex',
-            flexDirection: 'row'
+            flexDirection: 'row',
+            '@media (max-width: 600px)': {
+              flexDirection: 'column',
+              maxWidth: '100px',
+              display: 'flex'
+            }
           }}>
             <Box component="img"
                 sx={{
@@ -550,7 +589,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={nameEditCar}
-                onChange={e => setNameEditCar(e.target.value)}
+                onChange={e => setNameEditCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -563,7 +602,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={brandEditCar}
-                onChange={e => setBrandEditCar(e.target.value)}
+                onChange={e => setBrandEditCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -576,7 +615,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={modelEditCar}
-                onChange={e => setModelEditCar(e.target.value)}
+                onChange={e => setModelEditCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -589,7 +628,7 @@ const CarListAdmin = () => {
                 }}
                 variant="outlined"
                 value={colorEditCar}
-                onChange={e => setColorEditCar(e.target.value)}
+                onChange={e => setColorEditCar(e.target.value.toUpperCase())}
                 fullWidth
                 sx={{
                   mb: 3
@@ -607,9 +646,7 @@ const CarListAdmin = () => {
                 variant="outlined"
                 type="text"
                 value={ageEditCar}
-                onChange={e => 
-                  setAgeEditCar(MaskNumber(e))
-                }
+                onChange={e => setAgeEditCar(MaskNumber(e))}
                 fullWidth
                 sx={{
                   mb: 3

@@ -2,7 +2,7 @@ import { Container, Box, TextField, Typography, Button } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthLogin, AuthRegister } from '../services/auth.services';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 
 const Login = () => {  
   const [email, setEmail] = useState('');
@@ -21,17 +21,35 @@ const Login = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    await AuthLogin(email, password).then(() => {
-      if (localStorage.getItem('access-token'))
-        navigate('/my-account');
+    let t = toast.loading('Loading...');
+    await AuthLogin(email, password).then((res) => {
+      toast.dismiss(t);
+      if (res.status === 200){
+        if (localStorage.getItem('access-token'))
+          navigate('/my-account');
+      } else {
+        toast.error(res.data);
+      }
     })
   }
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    await AuthRegister(newName, newEmail, newPassword).finally(() => {
-      navigate('/my-account');
-    });
+    let t = toast.loading('Loading...');
+    await AuthRegister(newName, newEmail, newPassword).then((res) => {
+      toast.dismiss(t);
+      if (res.status === 200){
+        toast.success('Cadastro realizado com sucesso');
+        setNewName('');
+        setNewEmail('');
+        setNewPassword('');
+        if (localStorage.getItem('access-token')){
+          navigate('/my-account');
+        }
+      } else {
+        toast.error(res.data);
+      }
+    })
   }
 
   return (

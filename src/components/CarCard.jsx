@@ -1,5 +1,4 @@
 import { Card, CardActionArea, CardContent, CardMedia, Typography } from "@mui/material";
-import { formatReal } from "../utils/Format";
 
 const CarCard = ({name, brand, model, age, color, km, photo, value}) => (
   <Card sx={{

@@ -10,11 +10,15 @@ const MyAccount = () => {
   const [newPassword, setNewPassword] = useState('');
 
   const fetchData = async () => {
+    let tLoad = toast.loading("Loading...");
     await UserGetInfo().then(res => {
-      if (res.email)
-        setEmail(res.email);
-      if (res.name)
-        setName(res.name);
+      toast.dismiss(tLoad);
+      if (res.status === 200) {
+        setEmail(res.data.email);
+        setName(res.data.name);
+      } else {
+        toast.error("Ocorreu um erro ao carregar as informações.");
+      }
     })
   }
 
@@ -25,8 +29,12 @@ const MyAccount = () => {
   const handleSetPassword = async (e) => {
     e.preventDefault();
     await UserUpdatePassword(newPassword).then(res => {
-      if (res)
+      if (res.status === 200) {
+        setNewPassword('');
         toast.success("Senha atualizada com sucesso!");
+      } else {
+        toast.error(res.data);
+      }
     })
   }
 
