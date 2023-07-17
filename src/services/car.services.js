@@ -6,25 +6,21 @@ const client = axios.create({
 });
 
 export const CarSearch = (page, searchText) => {
-  const tLoad = toast.loading("Loading...");
   return client.post('search', {
                           searchText,
                           page
                         })
-                        .then(res => res.data)
-                        .finally(toast.dismiss(tLoad));
+                        .then(res => res.data);
 }
 
 export const GetCarById = async (id) => {
-  const tLoad = toast.loading("Loading...");
   let config = {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('access-token')
     }
   }
   return await client.get('get-by-id?id='+id, config)
-                        .then(res => res.data)
-                        .finally(toast.dismiss(tLoad));
+                        .then(res => res.data);
 }
 
 export const GetAllCars = async (page) => {
@@ -46,14 +42,15 @@ export const CreateCar = async (car) => {
       'Authorization': 'Bearer ' + localStorage.getItem('access-token')
     }
   }
+
   return await client.post('create',
-                           car,
-                           config)
-                           .then((res) => {
-                             toast.success("Veículo criado com sucesso!");
-                             return res.data;
-                           })
-                           .finally(toast.dismiss(tLoad));
+                        car,
+                        config)
+                        .then((res) => {
+                          toast.dismiss(tLoad);
+                          toast.success("Veículo criado com sucesso!");
+                          return res.data;
+                        });
 }
 
 export const UpdateCar = async (car) => {
@@ -67,10 +64,10 @@ export const UpdateCar = async (car) => {
                            car,
                            config)
                            .then((res) => {
+                              toast.dismiss(tLoad);
                              toast.success("Veículo editado com sucesso!");
                              return res.data;
-                           })
-                           .finally(toast.dismiss(tLoad));
+                           });
 }
 
 export const DeleteCar = async (carId) => {
@@ -82,8 +79,8 @@ export const DeleteCar = async (carId) => {
   }
   return await client.delete('delete?id='+carId, config)
                         .then((res) => {
+                          toast.dismiss(tLoad);
                           toast.success("Veículo deletado com sucesso!");
                           return res.data;
-                        })
-                        .finally(toast.dismiss(tLoad));
+                        });
 }

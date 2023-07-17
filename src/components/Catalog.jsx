@@ -7,6 +7,7 @@ import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrow
 import { useEffect, useState } from "react";
 import { CarSearch } from "../services/car.services";
 import SearchIcon from '@mui/icons-material/Search';
+import { toast } from "react-hot-toast";
 
 const Catalog = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -17,12 +18,14 @@ const Catalog = () => {
   });
 
   const fetchData = async (page) => {
+    const tLoad = toast.loading("Loading...");
     await CarSearch(page, searchText).then((data) => {
       setCarListData({
         carList: data.carList,
         totalPages: data.totalPages
-      })
-    })
+      });
+      toast.dismiss(tLoad);
+    });
   }
   
   useEffect(() => {
@@ -106,7 +109,7 @@ const Catalog = () => {
         }
       }}>
         {carListData.carList.length !== 0 ? carListData.carList.map((car) => (
-          <CarCard key={car.id} name={car.name} brand={car.brand} model={car.model} age={car.age} color={car.color} km={car.km} photoUrl={car.photoUrl} value={car.price} />
+          <CarCard key={car.id} name={car.name} brand={car.brand} model={car.model} age={car.age} color={car.color} km={car.km} photo={car.photo} value={car.price} />
         )) : ""}
       </Box>
       {carListData.carList.length === 0 ? <Typography variant="h4" sx={{

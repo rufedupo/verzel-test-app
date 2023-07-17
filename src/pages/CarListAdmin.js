@@ -8,6 +8,9 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { useEffect, useState } from "react";
 import { CreateCar, DeleteCar, GetAllCars, GetCarById, UpdateCar } from "../services/car.services";
+import { DropzoneDialog } from "mui-file-dropzone";
+import { toast } from "react-hot-toast";
+import { MaskCurrency, MaskNumber, formatReal } from "../utils/Format";
 
 const styleModal = {
   position: 'absolute',
@@ -25,6 +28,7 @@ const CarListAdmin = () => {
     totalPages: 1
   });
   const [openModal, setOpenModal] = useState(false);
+  const [openPhotoModal, setOpenPhotoModal] = useState(false);
   const [nameNewCar, setNameNewCar] = useState('');
   const [brandNewCar, setBrandNewCar] = useState('');
   const [modelNewCar, setModelNewCar] = useState('');
@@ -33,6 +37,7 @@ const CarListAdmin = () => {
   const [kmNewCar, setKmNewCar] = useState('');
   const [priceNewCar, setPriceNewCar] = useState('');
   const [photoNewCar, setPhotoNewCar] = useState('');
+  const [openDropPhotoNewCar, setOpenDropPhotoNewCar] = useState(false);
 
   const [openEditModal, setOpenEditModal] = useState(false);
   const [idEditCar, setIdEditCar] = useState('');
@@ -44,39 +49,82 @@ const CarListAdmin = () => {
   const [kmEditCar, setKmEditCar] = useState('');
   const [priceEditCar, setPriceEditCar] = useState('');
   const [photoEditCar, setPhotoEditCar] = useState('');
+  const [openDropPhotoEditCar, setOpenDropPhotoEditCar] = useState(false);
 
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  const handleOpenEditModal = async (e, id) => { 
-    e.preventDefault();
-    await GetCarById(id).then((data) => {
-      setIdEditCar(id);
-      setNameEditCar(data.name);
-      setBrandEditCar(data.brand);
-      setModelEditCar(data.model);
-      setColorEditCar(data.color);
-      setAgeEditCar(data.age);
-      setKmEditCar(data.km);
-      setPriceEditCar(data.price);
-      setOpenEditModal(true);
-    })
-  };
-  const handleCloseEditModal = () => {
-    setOpenEditModal(false)
-  };
-
-  const fetchData = async (page) => {
-    await GetAllCars(page).then((data) =>
-      setCarListData({
-        carList: data.carList,
-        totalPages: data.totalPages
-      }))
-  }
+  const [photoViewCar, setPhotoViewCar] = useState('');
   
   useEffect(() => {
     fetchData();
   }, [])
+
+  const fetchData = async (page) => {
+    const tLoad = toast.loading("Loading...");
+    await GetAllCars(page).then((data) => {
+      setCarListData({
+        carList: data.carList,
+        totalPages: data.totalPages
+      })
+      toast.dismiss(tLoad)
+    });
+  }
+
+  const handleOpenModal = () => setOpenModal(true);
+
+  const handleOpenEditModal = async (e, id) => { 
+    e.preventDefault();
+    const tLoad = toast.loading("Loading...");
+    var car = carListData.carList.find(cl => cl.id === id);
+    setIdEditCar(car.id);
+    setNameEditCar(car.name);
+    setBrandEditCar(car.brand);
+    setModelEditCar(car.model);
+    setColorEditCar(car.color);
+    setAgeEditCar(car.age);
+    setKmEditCar(car.km);
+    setPriceEditCar(car.price);
+    if (car.photo !== undefined) setPhotoEditCar(car.photo);
+    setOpenEditModal(true);
+    toast.dismiss(tLoad);
+  };
+
+  const handleOpenPhotoModal = async (e, id) => { 
+    e.preventDefault();
+    const tLoad = toast.loading("Loading...");
+    var car = carListData.carList.find(cl => cl.id === id);
+    if (car.photo !== undefined) setPhotoViewCar(car.photo);
+    setOpenPhotoModal(true);
+    toast.dismiss(tLoad);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false)
+    setNameNewCar('');
+    setBrandNewCar('');
+    setModelNewCar('');
+    setColorNewCar('');
+    setAgeNewCar('');
+    setKmNewCar('');
+    setPriceNewCar('');
+    setPhotoNewCar('');
+  };
+
+  const handleCloseEditModal = () => {
+    setOpenEditModal(false)
+    setIdEditCar('');
+    setNameEditCar('');
+    setBrandEditCar('');
+    setModelEditCar('');
+    setColorEditCar('');
+    setAgeEditCar('');
+    setKmEditCar('');
+    setPriceEditCar('');
+    setPhotoEditCar('');
+  };
+
+  const handleClosePhotoModal = () => {
+    setPhotoViewCar('');
+    setOpenPhotoModal(false)
+  };
 
   const handleBackButton = (e) => {
     e.preventDefault();
@@ -111,17 +159,11 @@ const CarListAdmin = () => {
       color: colorNewCar,
       age: ageNewCar,
       km: kmNewCar,
-      price: priceNewCar
+      price: priceNewCar,
+      photo: photoNewCar
     }).then((data) => {
       setCurrentPage(0);
       fetchData();
-      setNameNewCar('');
-      setBrandNewCar('');
-      setModelNewCar('');
-      setColorNewCar('');
-      setAgeNewCar('');
-      setKmNewCar('');
-      setPriceNewCar('');
       handleCloseModal();
     })
   }
@@ -136,18 +178,11 @@ const CarListAdmin = () => {
       color: colorEditCar,
       age: ageEditCar,
       km: kmEditCar,
-      price: priceEditCar
+      price: priceEditCar,
+      photo: photoEditCar
     }).then((data) => {
       setCurrentPage(0);
       fetchData();
-      setIdEditCar('');
-      setNameEditCar('');
-      setBrandEditCar('');
-      setModelEditCar('');
-      setColorEditCar('');
-      setAgeEditCar('');
-      setKmEditCar('');
-      setPriceEditCar('');
       handleCloseEditModal();
     })
   }
@@ -157,6 +192,23 @@ const CarListAdmin = () => {
     await DeleteCar(guid).then((data) => {
       setCurrentPage(0);
       fetchData();
+    })
+  }
+
+  const getBase64 = file => {
+    return new Promise(resolve => {
+      let baseURL = "";
+      // Make new FileReader
+      let reader = new FileReader();
+  
+      // Convert the file to base64 text
+      reader.readAsDataURL(file);
+  
+      // on reader load somthing...
+      reader.onload = () => {
+        baseURL = reader.result;
+        resolve(baseURL);
+      };
     })
   }
 
@@ -221,7 +273,7 @@ const CarListAdmin = () => {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell align="center">
-                    <IconButton>
+                    <IconButton onClick={e => handleOpenPhotoModal(e, row.id)}>
                       <PhotoIcon/>
                     </IconButton>
                   </TableCell>
@@ -303,17 +355,39 @@ const CarListAdmin = () => {
           }}>
             <Box component="img"
                 sx={{
-                  height: 300,
-                  width: 300,
-                  marginRight: '2em'
+                  maxHeight: 295,
+                  maxWidth: 295,
+                  objectFit: 'contain',
+                  marginRight: '2em',
+                  cursor: 'pointer'
                 }}
-                src="https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-wa7IqZCJVOlsWgp1IaO4jUmlSJ6PPE_WUOyw418b-GedW0OxNs6ckxSB10EWhfPYHcDCfEmFZ6G_DbwuhZHB7UPAapEA=w1920-h820"/>
+                onClick={() => setOpenDropPhotoNewCar(true)}
+                src={photoNewCar !== '' ? photoNewCar : "https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-wa7IqZCJVOlsWgp1IaO4jUmlSJ6PPE_WUOyw418b-GedW0OxNs6ckxSB10EWhfPYHcDCfEmFZ6G_DbwuhZHB7UPAapEA=w1920-h820"}/>
+            
+            <DropzoneDialog
+              onClose={() => setOpenDropPhotoNewCar(false)}
+              acceptedFiles={['image/*']}
+              open={openDropPhotoNewCar}
+              dropzoneText={"Arraste e solte uma imagem aqui ou clique"}
+              maxFileSize={2000000}
+              submitButtonText="Adicionar imagem"
+              cancelButtonText="Cancelar"
+              dialogTitle="Carregar imagem"
+              filesLimit={1}
+              onSave={(files) => {
+                getBase64(files[0]).then(b64 => setPhotoNewCar(b64));
+                setOpenDropPhotoNewCar(false);
+              }}
+            />
             <FormGroup sx={{
               marginRight: '1em',
               width: '200px'
             }}>
               <TextField 
                 label="Nome"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={nameNewCar}
                 onChange={e => setNameNewCar(e.target.value)}
@@ -324,6 +398,9 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Marca"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={brandNewCar}
                 onChange={e => setBrandNewCar(e.target.value)}
@@ -334,6 +411,9 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Modelo"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={modelNewCar}
                 onChange={e => setModelNewCar(e.target.value)}
@@ -344,6 +424,9 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Cor"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={colorNewCar}
                 onChange={e => setColorNewCar(e.target.value)}
@@ -359,9 +442,14 @@ const CarListAdmin = () => {
               <TextField 
                 label="Ano"
                 variant="outlined"
-                type="number"
+                type="text"
                 value={ageNewCar}
-                onChange={e => setAgeNewCar(e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={e => {
+                  setAgeNewCar(MaskNumber(e));
+                }}
                 fullWidth
                 sx={{
                   mb: 3
@@ -370,9 +458,14 @@ const CarListAdmin = () => {
               <TextField 
                 label="Km"
                 variant="outlined"
-                type="number"
+                type="text"
                 value={kmNewCar}
-                onChange={e => setKmNewCar(e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={e => {
+                  setKmNewCar(MaskNumber(e));
+                }}
                 fullWidth
                 sx={{
                   mb: 3
@@ -381,9 +474,14 @@ const CarListAdmin = () => {
               <TextField 
                 label="Preço"
                 variant="outlined"
-                type="number"
+                type="text"
                 value={priceNewCar}
-                onChange={e => setPriceNewCar(e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={e => {
+                  setPriceNewCar(MaskCurrency(e));
+                }}
                 fullWidth
                 sx={{
                   mb: 3
@@ -418,17 +516,38 @@ const CarListAdmin = () => {
           }}>
             <Box component="img"
                 sx={{
-                  height: 300,
-                  width: 300,
-                  marginRight: '2em'
+                  maxHeight: 295,
+                  maxWidth: 295,
+                  objectFit: 'contain',
+                  marginRight: '2em',
+                  cursor: 'pointer'
                 }}
-                src="https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-wa7IqZCJVOlsWgp1IaO4jUmlSJ6PPE_WUOyw418b-GedW0OxNs6ckxSB10EWhfPYHcDCfEmFZ6G_DbwuhZHB7UPAapEA=w1920-h820"/>
+                onClick={() => setOpenDropPhotoEditCar(true)}
+                src={photoEditCar !== '' ? photoEditCar : "https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-wa7IqZCJVOlsWgp1IaO4jUmlSJ6PPE_WUOyw418b-GedW0OxNs6ckxSB10EWhfPYHcDCfEmFZ6G_DbwuhZHB7UPAapEA=w1920-h820"}/>
+            <DropzoneDialog
+              onClose={() => setOpenDropPhotoEditCar(false)}
+              acceptedFiles={['image/*']}
+              open={openDropPhotoEditCar}
+              dropzoneText={"Arraste e solte uma imagem aqui ou clique"}
+              maxFileSize={2000000}
+              submitButtonText="Adicionar imagem"
+              cancelButtonText="Cancelar"
+              dialogTitle="Carregar imagem"
+              filesLimit={1}
+              onSave={(files) => {
+                getBase64(files[0]).then(b64 => setPhotoEditCar(b64));
+                setOpenDropPhotoEditCar(false);
+              }}
+            />
             <FormGroup sx={{
               marginRight: '1em',
               width: '200px'
             }}>
               <TextField 
                 label="Nome"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={nameEditCar}
                 onChange={e => setNameEditCar(e.target.value)}
@@ -439,6 +558,9 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Marca"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={brandEditCar}
                 onChange={e => setBrandEditCar(e.target.value)}
@@ -449,6 +571,9 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Modelo"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={modelEditCar}
                 onChange={e => setModelEditCar(e.target.value)}
@@ -459,6 +584,9 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Cor"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
                 value={colorEditCar}
                 onChange={e => setColorEditCar(e.target.value)}
@@ -473,10 +601,15 @@ const CarListAdmin = () => {
             }}>
               <TextField 
                 label="Ano"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
-                type="number"
+                type="text"
                 value={ageEditCar}
-                onChange={e => setAgeEditCar(e.target.value)}
+                onChange={e => 
+                  setAgeEditCar(MaskNumber(e))
+                }
                 fullWidth
                 sx={{
                   mb: 3
@@ -484,10 +617,13 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Km"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
-                type="number"
+                type="text"
                 value={kmEditCar}
-                onChange={e => setKmEditCar(e.target.value)}
+                onChange={e => setKmEditCar(MaskNumber(e))}
                 fullWidth
                 sx={{
                   mb: 3
@@ -495,10 +631,13 @@ const CarListAdmin = () => {
               />
               <TextField 
                 label="Preço"
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 variant="outlined"
-                type="number"
+                type="text"
                 value={priceEditCar}
-                onChange={e => setPriceEditCar(e.target.value)}
+                onChange={e => setPriceEditCar(MaskCurrency(e))}
                 fullWidth
                 sx={{
                   mb: 3
@@ -515,6 +654,20 @@ const CarListAdmin = () => {
               }} onClick={e => handleEditCar(e)}>Salvar</Button>
             </FormGroup>
           </FormControl>
+        </Box>
+      </Modal>
+      <Modal
+        open={openPhotoModal}
+        onClose={handleClosePhotoModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModal}>
+          <Box component="img"
+                sx={{
+                  maxWidth: '300px'
+                }}
+                src={photoViewCar !== '' ? photoViewCar : "https://lh3.googleusercontent.com/u/3/drive-viewer/AITFw-wa7IqZCJVOlsWgp1IaO4jUmlSJ6PPE_WUOyw418b-GedW0OxNs6ckxSB10EWhfPYHcDCfEmFZ6G_DbwuhZHB7UPAapEA=w1920-h820"}/>
         </Box>
       </Modal>
     </>

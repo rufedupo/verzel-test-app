@@ -1,8 +1,8 @@
 import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
 import { Link } from 'react-router-dom';
-import Catalog from "../components/Catalog";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
+import Catalog from "../components/catalog";
 
 const Home = () =>{
   const [logged, setLogged] = useState(false);

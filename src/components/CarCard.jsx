@@ -1,6 +1,7 @@
 import { Card, CardActionArea, CardContent, CardMedia, Typography } from "@mui/material";
+import { formatReal } from "../utils/Format";
 
-const CarCard = ({name, brand, model, age, color, km, photoUrl, value}) => (
+const CarCard = ({name, brand, model, age, color, km, photo, value}) => (
   <Card sx={{
     marginTop: '1em',
     backgroundColor: '#f1f1f1'
@@ -9,7 +10,7 @@ const CarCard = ({name, brand, model, age, color, km, photoUrl, value}) => (
       <CardMedia
         component="img"
         height="140"
-        image={photoUrl}
+        image={photo}
       />
       <CardContent>
         <Typography gutterBottom variant="caption" component="div">
